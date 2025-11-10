@@ -16,6 +16,17 @@
       .font-orbitron {
         font-family: 'Orbitron', sans-serif;
       }
+      @keyframes pulse-glow {
+        0%, 100% {
+          text-shadow: 0 0 8px var(--color-glow), 0 0 10px var(--color-glow);
+        }
+        50% {
+          text-shadow: 0 0 12px var(--color-glow), 0 0 20px var(--color-glow);
+        }
+      }
+      .animate-pulse-glow {
+        animation: pulse-glow 2.5s ease-in-out infinite;
+      }
     </style>
   <script type="importmap">
 {
