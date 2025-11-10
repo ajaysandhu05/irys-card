@@ -1,17 +1,21 @@
-
 import React, { useState, useRef, useCallback } from 'react';
 import { toPng } from 'html-to-image';
-import { CardTheme, CardDesign, CardData } from './types';
-import Card, { themeStyles, designPaths } from './components/Card';
+import { CardTheme, CardDesign, CardData, TextEffect } from './types';
+// FIX: Import designPaths and themeStyles from components/Card.tsx to resolve errors.
+import Card, { designPaths, themeStyles } from './components/Card';
 import Controls from './components/Controls';
+
+const defaultImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAoAAAAHgCAYAAAA10dzkAAABmWlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGBkZGBgYGSUYXBgYGBhY2AggA9hZWBgYJkYpjlQUhxDMIp5ILMXg4k5aZ5wzEk83cHBxADy3i4fB4d4Mjg4YmSE4OBgAYkBAWkZWMARsgsgSg7gNEBSkZpsFiA3sLMF0t2Dyv2gOojgA8g2kjQ2yyA7cBsF23DkDoDkPumeywPEeA4j6zAYAAAZh3k/iQe4gRgQj85x5z/wz/A/s+w/+w//l/2/2324/x/A/s9/s/yv/N8F8wMDCwMNiwubCzMDNwsXDwcPAxMPDIsPDw8/AycjExMXExcjJycrJycvIychLycnIKygoamlrauvq6uobGBoZGxiamZuZW1udnZ1dHV1dPT19fUNjYwMjYxNTM3MLSytrG1s7ewdHJ2cnZxdXN3c3Tz9/P0AgQGCQoNCRYWERoZFR0ZFx8YkJCUmJyZnpmfk5+QWFBSVlJWWlZuXn1hQVFZWVVdU1NLW0dXT9/AzgAAhMwgK0iHw4AAAAASUVORK5CYII=';
 
 const App: React.FC = () => {
   const [theme, setTheme] = useState<CardTheme>(CardTheme.Red);
   const [design, setDesign] = useState<CardDesign>(CardDesign.Standard);
+  const [titleEffect, setTitleEffect] = useState<TextEffect>(TextEffect.Glow);
+  const [descriptionEffect, setDescriptionEffect] = useState<TextEffect>(TextEffect.Glow);
   const [cardData, setCardData] = useState<CardData>({
-    title: 'IRYS (🦄).canvas',
+    title: 'IRYS MAINNET CARD',
     description: 'my self peter i m shihan at irys community and i have created this so my lovely family in irys.',
-    image: 'https://picsum.photos/seed/irys/400/400',
+    image: defaultImage,
   });
 
   const cardRef = useRef<HTMLDivElement>(null);
@@ -35,13 +39,19 @@ const App: React.FC = () => {
 
   const handleReset = () => {
     setCardData({
-      title: 'IRYS (🦄).canvas',
+      title: 'IRYS MAINNET CARD',
       description: 'my self peter i m shihan at irys community and i have created this so my lovely family in irys.',
-      image: 'https://picsum.photos/seed/irys/400/400',
+      image: defaultImage,
     });
     setTheme(CardTheme.Red);
     setDesign(CardDesign.Standard);
+    setTitleEffect(TextEffect.Glow);
+    setDescriptionEffect(TextEffect.Glow);
   }
+
+  const handleImageUpload = (image: string) => {
+    setCardData(prev => ({ ...prev, image }));
+  };
 
   const backgroundStyles: Record<CardTheme, string> = {
     [CardTheme.Red]: 'from-red-900/50 to-black',
@@ -65,17 +75,19 @@ const App: React.FC = () => {
   return (
     <div className={`min-h-screen w-full bg-black text-white transition-all duration-500 bg-cover bg-center`} style={{backgroundImage: "url('https://picsum.photos/seed/space/1920/1080')"}}>
       <div className={`min-h-screen w-full bg-gradient-to-b ${backgroundStyles[theme]} backdrop-blur-sm flex flex-col items-center justify-center p-4`}>
-        <header className="text-center mb-4 md:mb-8">
-          <h1 className="font-orbitron text-4xl md:text-6xl font-bold tracking-widest text-shadow-glow" style={{ textShadow: '0 0 10px rgba(255,255,255,0.5)'}}>IRYS</h1>
-        </header>
 
         <main className="flex flex-col lg:flex-row items-center justify-center gap-8 w-full max-w-6xl">
-          <div className="w-full max-w-sm flex-shrink-0">
-            <div ref={cardRef}>
-               <Card theme={theme} design={design} data={cardData} />
+          <div className="w-full max-w-md flex-shrink-0">
+            <h2 className="text-center font-orbitron text-2xl font-bold mb-4 text-white uppercase tracking-wider" style={{ textShadow: `0 0 10px ${themeStyles[theme].colors.glow}`}}>
+                IRYS MAINNET CARD
+            </h2>
+            <div ref={cardRef} className="bg-zinc-900/80 p-4 rounded-2xl backdrop-blur-sm border border-zinc-700">
+              <div className="aspect-[4/5] w-full">
+                 <Card theme={theme} design={design} data={cardData} titleEffect={titleEffect} descriptionEffect={descriptionEffect} />
+              </div>
             </div>
              <div className="flex justify-center items-center gap-4 mt-6">
-                <Controls onReset={handleReset} onDownload={handleDownload} onImageUpload={(image) => setCardData(prev => ({ ...prev, image }))} />
+                <Controls onReset={handleReset} onDownload={handleDownload} onImageUpload={handleImageUpload} />
             </div>
           </div>
           
@@ -103,6 +115,40 @@ const App: React.FC = () => {
                   className="w-full bg-gray-900/50 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition"
                   placeholder="Enter card description"
                 />
+              </div>
+               <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Title Effect</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(Object.keys(TextEffect) as Array<keyof typeof TextEffect>).map((key) => {
+                    const currentEffect = TextEffect[key];
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => setTitleEffect(currentEffect)}
+                        className={`py-2 px-1 text-xs font-semibold rounded-md border-2 transition-transform transform hover:scale-105 ${titleEffect === currentEffect ? 'bg-purple-500/30 border-purple-400 text-white' : 'bg-gray-900/50 border-gray-600 text-gray-300'}`}
+                      >
+                        {key}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+               <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Description Effect</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(Object.keys(TextEffect) as Array<keyof typeof TextEffect>).map((key) => {
+                    const currentEffect = TextEffect[key];
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => setDescriptionEffect(currentEffect)}
+                        className={`py-2 px-1 text-xs font-semibold rounded-md border-2 transition-transform transform hover:scale-105 ${descriptionEffect === currentEffect ? 'bg-purple-500/30 border-purple-400 text-white' : 'bg-gray-900/50 border-gray-600 text-gray-300'}`}
+                      >
+                        {key}
+                      </button>
+                    )
+                  })}
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">Design</label>

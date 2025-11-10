@@ -1,10 +1,12 @@
 import React from 'react';
-import { CardTheme, CardDesign, CardData } from '../types';
+import { CardTheme, CardDesign, CardData, TextEffect } from '../types';
 
 interface CardProps {
   theme: CardTheme;
   design: CardDesign;
   data: CardData;
+  titleEffect: TextEffect;
+  descriptionEffect: TextEffect;
 }
 
 // --- THEME & DESIGN STYLES ---
@@ -79,14 +81,52 @@ export const designPaths: Record<CardDesign, string> = {
   [CardDesign.Classic]: "M25,2 H275 L298,25 V475 L275,498 H25 L2,475 V25 L25,2 Z M15,15 H285 V485 H15 Z",
 };
 
+const getTextEffectStyles = (
+  effect: TextEffect,
+  colors: { glow: string; base: string },
+  intensity: 'high' | 'low'
+): React.CSSProperties => {
+  const isHigh = intensity === 'high';
+  switch (effect) {
+    case TextEffect.Glow:
+      return {
+        textShadow: isHigh
+          ? `0 0 8px ${colors.glow}, 0 0 10px ${colors.glow}`
+          : `0 0 4px ${colors.glow}`,
+      };
+    case TextEffect.Outline:
+      return {
+        textShadow: `
+          -1px -1px 0 ${colors.glow}, 1px -1px 0 ${colors.glow},
+          -1px 1px 0 ${colors.glow}, 1px 1px 0 ${colors.glow},
+          0 0 ${isHigh ? '5px' : '2px'} ${colors.glow}`,
+      };
+    case TextEffect.Shadow:
+      return {
+        textShadow: isHigh
+          ? `2px 2px 4px rgba(0,0,0,0.7)`
+          : `1px 1px 2px rgba(0,0,0,0.8)`,
+      };
+    case TextEffect.Neon:
+      return {
+        color: '#fff',
+        textShadow: isHigh
+          ? `0 0 5px ${colors.glow}, 0 0 10px ${colors.glow}, 0 0 15px ${colors.glow}`
+          : `0 0 2px ${colors.glow}, 0 0 5px ${colors.glow}`,
+      };
+    case TextEffect.None:
+    default:
+      return {};
+  }
+};
 
-const Card: React.FC<CardProps> = ({ theme, design, data }) => {
+const Card: React.FC<CardProps> = ({ theme, design, data, titleEffect, descriptionEffect }) => {
   const style = themeStyles[theme];
   const framePath = designPaths[design];
   const { colors } = style;
 
   return (
-    <div className="aspect-[3/5] w-full max-w-sm p-3 relative font-sans" style={{
+    <div className="w-full h-full p-3 relative font-sans" style={{
         '--color-base': colors.base,
         '--color-glow': colors.glow,
       } as React.CSSProperties}>
@@ -95,7 +135,7 @@ const Card: React.FC<CardProps> = ({ theme, design, data }) => {
         }}></div>
         
         {/* Frame SVG */}
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 500" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
             <defs>
                 <linearGradient id={`grad-${theme}`} x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" style={{stopColor: colors.glow, stopOpacity:1}} />
@@ -109,10 +149,10 @@ const Card: React.FC<CardProps> = ({ theme, design, data }) => {
                     </feMerge>
                 </filter>
             </defs>
-            <path d={framePath} stroke={`url(#grad-${theme})`} strokeWidth="4" filter={`url(#glow-${theme})`} />
+            <path d={framePath} stroke={`url(#grad-${theme})`} strokeWidth="4" filter={`url(#glow-${theme})`} vectorEffect="non-scaling-stroke" />
             {/* Inner details */}
-            <path d="M15,40 H285 M15,460 H285" stroke={colors.base} strokeWidth="1" strokeOpacity="0.5"/>
-            <path d="M40,15 V485 M260,15 V485" stroke={colors.base} strokeWidth="1" strokeOpacity="0.5"/>
+            <path d="M15,40 H285 M15,460 H285" stroke={colors.base} strokeWidth="1" strokeOpacity="0.5" vectorEffect="non-scaling-stroke"/>
+            <path d="M40,15 V485 M260,15 V485" stroke={colors.base} strokeWidth="1" strokeOpacity="0.5" vectorEffect="non-scaling-stroke"/>
         </svg>
 
         <div className="relative w-full h-full flex flex-col justify-between p-4 z-10 bg-black/10 rounded-[20px]">
@@ -121,13 +161,18 @@ const Card: React.FC<CardProps> = ({ theme, design, data }) => {
                  <span className="text-lg font-bold" style={{ color: colors.glow, textShadow: `0 0 5px ${colors.glow}` }}>
                     (✧◡✧)
                 </span>
-                <span className="font-orbitron text-sm md:text-base font-bold text-white tracking-wider" style={{ textShadow: `0 0 4px ${colors.glow}` }}>{data.title}</span>
+                <span 
+                    className={`font-orbitron text-sm md:text-base font-bold text-white tracking-wider ${titleEffect === TextEffect.Glow ? 'animate-pulse-glow' : ''}`}
+                    style={getTextEffectStyles(titleEffect, colors, 'high')}
+                >
+                    {data.title}
+                </span>
             </div>
 
             {/* Image section */}
-            <div className={`flex-grow my-3 border-2 p-1 bg-black/30 rounded-lg`} style={{borderColor: colors.base}}>
+            <div className={`group flex-grow my-3 border-2 p-1 bg-black/30 rounded-lg min-h-0 flex items-center justify-center overflow-hidden`} style={{borderColor: colors.base}}>
                  {data.image ? (
-                    <img src={data.image} alt="Card art" className="w-full h-full object-cover rounded-md" />
+                    <img src={data.image} alt="Card art" className="w-full h-full object-cover rounded-md transition-transform duration-500 ease-in-out group-hover:scale-125" />
                 ) : (
                     <div className="w-full h-full bg-gray-800 rounded-md flex items-center justify-center">
                         <span className="text-gray-500">No Image</span>
@@ -143,7 +188,10 @@ const Card: React.FC<CardProps> = ({ theme, design, data }) => {
                             🦄
                         </span>
                     </div>
-                    <p className={`text-xs leading-snug font-mono ${colors.text} flex-grow h-16 overflow-y-auto pr-1`}>
+                    <p 
+                        className={`text-xs leading-snug font-mono ${colors.text} flex-grow h-16 overflow-y-auto pr-1`}
+                        style={getTextEffectStyles(descriptionEffect, colors, 'low')}
+                    >
                         {data.description}
                     </p>
                 </div>

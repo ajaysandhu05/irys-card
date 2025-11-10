@@ -32,6 +32,14 @@ export enum CardTheme {
   Cosmic = 'Cosmic',
 }
 
+export enum TextEffect {
+  None = 'None',
+  Glow = 'Glow',
+  Shadow = 'Shadow',
+  Outline = 'Outline',
+  Neon = 'Neon',
+}
+
 export interface CardData {
   title: string;
   description: string;
