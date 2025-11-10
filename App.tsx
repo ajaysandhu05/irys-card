@@ -2,7 +2,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { toPng } from 'html-to-image';
 import { CardTemplate, CardData } from './types';
-import Card from './components/Card';
+import Card, { templateStyles } from './components/Card';
 import Controls from './components/Controls';
 
 const App: React.FC = () => {
@@ -103,7 +103,7 @@ const App: React.FC = () => {
                       key={key}
                       onClick={() => setTemplate(CardTemplate[key])}
                       className={`h-12 w-full rounded-md border-2 transition-transform transform hover:scale-105 ${template === CardTemplate[key] ? 'border-white scale-105' : 'border-transparent'}`}
-                      style={{ backgroundColor: `var(--color-${CardTemplate[key].toLowerCase()}-glow)` }}
+                      style={{ backgroundColor: templateStyles[CardTemplate[key]].colors.glow }}
                       aria-label={`Select ${key} template`}
                     />
                   ))}
@@ -114,7 +114,7 @@ const App: React.FC = () => {
         </main>
 
         <footer className="text-center mt-4 md:mt-8">
-            <h2 className="font-orbitron text-4xl md:text-5xl font-bold tracking-widest text-shadow-glow-footer" style={{ textShadow: `0 0 15px var(--color-${template.toLowerCase()}-glow)`}}>IRYS CARDS</h2>
+            <h2 className="font-orbitron text-4xl md:text-5xl font-bold tracking-widest text-shadow-glow-footer" style={{ textShadow: `0 0 15px ${templateStyles[template].colors.glow}`}}>IRYS CARDS</h2>
         </footer>
       </div>
     </div>

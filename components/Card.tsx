@@ -40,13 +40,6 @@ const MysticIcon: React.FC<{ color: string }> = ({ color }) => (
     </svg>
 );
 
-
-const StarIcon: React.FC<{ color: string }> = ({ color }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill={color} stroke={color} strokeWidth="1">
-        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-    </svg>
-);
-
 // --- TEMPLATE STYLES ---
 
 interface TemplateStyle {
@@ -55,7 +48,7 @@ interface TemplateStyle {
   framePath: string;
 }
 
-const templateStyles: Record<CardTemplate, TemplateStyle> = {
+export const templateStyles: Record<CardTemplate, TemplateStyle> = {
   [CardTemplate.Red]: {
     colors: { base: '#C70039', glow: '#FF5733', text: 'text-red-300', shadow: 'shadow-red-500/50' },
     Icon: SwordIcon,
@@ -145,8 +138,8 @@ const Card: React.FC<CardProps> = ({ template, data }) => {
                     <div className="w-6 h-6 rounded-full bg-gray-700"></div>
                     <span className="font-orbitron text-sm md:text-base font-bold text-white tracking-wider">{data.title}</span>
                 </div>
-                <div className="p-1 bg-gray-800 rounded-full">
-                    <StarIcon color={colors.glow} />
+                <div className="text-lg font-bold" style={{ color: colors.glow, textShadow: `0 0 5px ${colors.glow}` }}>
+                    (✧◡✧)
                 </div>
             </div>
 
