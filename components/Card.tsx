@@ -157,22 +157,25 @@ const Card: React.FC<CardProps> = ({ theme, design, data, titleEffect, descripti
 
         <div className="relative w-full h-full flex flex-col justify-between p-4 z-10 bg-black/10 rounded-[20px]">
             {/* Top section */}
-            <div className={`border-2 rounded-lg p-2 flex items-center space-x-2 bg-gray-900/50 backdrop-blur-sm`} style={{borderColor: colors.base}}>
+            <div className={`border-2 rounded-lg p-2 flex items-center justify-between bg-gray-900/50 backdrop-blur-sm`} style={{borderColor: colors.base}}>
                  <span className="text-lg font-bold" style={{ color: colors.glow, textShadow: `0 0 5px ${colors.glow}` }}>
                     (✧◡✧)
                 </span>
                 <span 
-                    className={`font-orbitron text-sm md:text-base font-bold text-white tracking-wider ${titleEffect === TextEffect.Glow ? 'animate-pulse-glow' : ''}`}
+                    className={`font-orbitron text-sm md:text-base font-bold text-white tracking-wider text-center px-2 ${titleEffect === TextEffect.Glow ? 'animate-pulse-glow' : ''}`}
                     style={getTextEffectStyles(titleEffect, colors, 'high')}
                 >
                     {data.title}
                 </span>
+                <span className="text-lg font-bold" style={{ color: colors.glow, textShadow: `0 0 5px ${colors.glow}` }}>
+                    (✧◡✧)
+                </span>
             </div>
 
             {/* Image section */}
-            <div className={`group flex-grow my-3 border-2 p-1 bg-black/30 rounded-lg min-h-0 flex items-center justify-center overflow-hidden`} style={{borderColor: colors.base}}>
+            <div className={`flex-grow my-3 border-2 p-1 bg-black/30 rounded-lg min-h-0 flex items-center justify-center overflow-hidden`} style={{borderColor: colors.base}}>
                  {data.image ? (
-                    <img src={data.image} alt="Card art" className="w-full h-full object-cover rounded-md transition-transform duration-500 ease-in-out group-hover:scale-125" />
+                    <img src={data.image} alt="Card art" className="w-full h-full object-cover rounded-md transition-transform duration-500 ease-in-out" />
                 ) : (
                     <div className="w-full h-full bg-gray-800 rounded-md flex items-center justify-center">
                         <span className="text-gray-500">No Image</span>
@@ -183,10 +186,45 @@ const Card: React.FC<CardProps> = ({ theme, design, data, titleEffect, descripti
             {/* Bottom section */}
             <div className={`p-3 rounded-lg bg-gray-900/30 backdrop-blur-sm border-t-2`} style={{borderTopColor: colors.base}}>
                 <div className="flex items-start gap-3">
-                    <div className="h-16 w-16 flex-shrink-0 rounded-full flex items-center justify-center bg-black/30" style={{border: `2px solid ${colors.base}`}}>
-                         <span className={`font-bold text-xl ${colors.text}`} style={{textShadow: `0 0 8px ${colors.glow}`}}>
-                            🦄
-                        </span>
+                    <div className="h-16 w-16 flex-shrink-0 rounded-full flex items-center justify-center bg-black/30 relative overflow-hidden" style={{border: `2px solid ${colors.base}`}}>
+                         {/* Enhanced IRYS Logo */}
+                        <svg viewBox="0 0 100 100" className="absolute w-full h-full text-white opacity-20" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id={`grad-${theme}-logo-bg`} x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style={{stopColor: colors.base}} />
+                                    <stop offset="100%" style={{stopColor: colors.glow}} />
+                                </linearGradient>
+                            </defs>
+                            <path d="M50 2 L95 27 L95 73 L50 98 L5 73 L5 27 Z" fill={`url(#grad-${theme}-logo-bg)`} />
+                        </svg>
+                        <svg viewBox="0 0 100 40" className="w-12 h-auto relative z-10" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id={`grad-${theme}-logo`} x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style={{stopColor: colors.glow}} />
+                                    <stop offset="100%" style={{stopColor: colors.base}} />
+                                </linearGradient>
+                                <filter id={`glow-${theme}-logo`} x="-50%" y="-50%" width="200%" height="200%">
+                                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                    <feMerge>
+                                        <feMergeNode in="coloredBlur"/>
+                                        <feMergeNode in="SourceGraphic"/>
+                                    </feMerge>
+                                </filter>
+                            </defs>
+                            <text
+                                fontFamily="Orbitron, sans-serif"
+                                fontSize="30"
+                                fontWeight="900"
+                                x="50%"
+                                y="50%"
+                                dominantBaseline="middle"
+                                textAnchor="middle"
+                                fill={`url(#grad-${theme}-logo)`}
+                                filter={`url(#glow-${theme}-logo)`}
+                            >
+                                IRYS
+                            </text>
+                        </svg>
                     </div>
                     <p 
                         className={`text-xs leading-snug font-mono ${colors.text} flex-grow h-16 overflow-y-auto pr-1`}

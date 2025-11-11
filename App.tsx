@@ -1,11 +1,14 @@
+
 import React, { useState, useRef, useCallback } from 'react';
 import { toPng } from 'html-to-image';
 import { CardTheme, CardDesign, CardData, TextEffect } from './types';
-// FIX: Import designPaths and themeStyles from components/Card.tsx to resolve errors.
 import Card, { designPaths, themeStyles } from './components/Card';
 import Controls from './components/Controls';
+import NetworkBackground from './components/NetworkBackground';
+import ImageCropModal from './components/ImageCropModal';
 
-const defaultImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAoAAAAHgCAYAAAA10dzkAAABmWlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGBkZGBgYGSUYXBgYGBhY2AggA9hZWBgYJkYpjlQUhxDMIp5ILMXg4k5aZ5wzEk83cHBxADy3i4fB4d4Mjg4YmSE4OBgAYkBAWkZWMARsgsgSg7gNEBSkZpsFiA3sLMF0t2Dyv2gOojgA8g2kjQ2yyA7cBsF23DkDoDkPumeywPEeA4j6zAYAAAZh3k/iQe4gRgQj85x5z/wz/A/s+w/+w//l/2/2324/x/A/s9/s/yv/N8F8wMDCwMNiwubCzMDNwsXDwcPAxMPDIsPDw8/AycjExMXExcjJycrJycvIychLycnIKygoamlrauvq6uobGBoZGxiamZuZW1udnZ1dHV1dPT19fUNjYwMjYxNTM3MLSytrG1s7ewdHJ2cnZxdXN3c3Tz9/P0AgQGCQoNCRYWERoZFR0ZFx8YkJCUmJyZnpmfk5+QWFBSVlJWWlZuXn1hQVFZWVVdU1NLW0dXT9/AzgAAhMwgK0iHw4AAAAASUVORK5CYII=';
+const defaultImage = 'https://cdn.pixabay.com/photo/2022/11/07/14/35/memory-7577189_1280.jpg';
+const defaultDescription = 'MY SELF PETER I M SHIHAN AT IRYS COMMUNITY AND I HAVE CREATED THIS CARD FOR KINGS & QUEEN OF THE IRYS';
 
 const App: React.FC = () => {
   const [theme, setTheme] = useState<CardTheme>(CardTheme.Red);
@@ -14,9 +17,10 @@ const App: React.FC = () => {
   const [descriptionEffect, setDescriptionEffect] = useState<TextEffect>(TextEffect.Glow);
   const [cardData, setCardData] = useState<CardData>({
     title: 'IRYS MAINNET CARD',
-    description: 'my self peter i m shihan at irys community and i have created this so my lovely family in irys.',
+    description: defaultDescription,
     image: defaultImage,
   });
+  const [uncroppedImage, setUncroppedImage] = useState<string | null>(null);
 
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -40,7 +44,7 @@ const App: React.FC = () => {
   const handleReset = () => {
     setCardData({
       title: 'IRYS MAINNET CARD',
-      description: 'my self peter i m shihan at irys community and i have created this so my lovely family in irys.',
+      description: defaultDescription,
       image: defaultImage,
     });
     setTheme(CardTheme.Red);
@@ -50,7 +54,16 @@ const App: React.FC = () => {
   }
 
   const handleImageUpload = (image: string) => {
-    setCardData(prev => ({ ...prev, image }));
+    setUncroppedImage(image);
+  };
+
+  const handleCropApply = (croppedImage: string) => {
+    setCardData(prev => ({ ...prev, image: croppedImage }));
+    setUncroppedImage(null);
+  };
+
+  const handleCropCancel = () => {
+    setUncroppedImage(null);
   };
 
   const backgroundStyles: Record<CardTheme, string> = {
@@ -73,14 +86,16 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen w-full bg-black text-white transition-all duration-500 bg-cover bg-center`} style={{backgroundImage: "url('https://picsum.photos/seed/space/1920/1080')"}}>
+    <div className={`relative min-h-screen w-full bg-black text-white transition-all duration-500`}>
+      <NetworkBackground theme={theme} />
       <div className={`min-h-screen w-full bg-gradient-to-b ${backgroundStyles[theme]} backdrop-blur-sm flex flex-col items-center justify-center p-4`}>
+        
+        <h1 className="text-center font-orbitron text-3xl font-bold mb-8 text-white uppercase tracking-wider whitespace-nowrap" style={{ textShadow: `0 0 10px ${themeStyles[theme].colors.glow}`}}>
+            (✧◡✧) IRYS MAINNET CARD (✧◡✧)
+        </h1>
 
         <main className="flex flex-col lg:flex-row items-center justify-center gap-8 w-full max-w-6xl">
           <div className="w-full max-w-md flex-shrink-0">
-            <h2 className="text-center font-orbitron text-2xl font-bold mb-4 text-white uppercase tracking-wider" style={{ textShadow: `0 0 10px ${themeStyles[theme].colors.glow}`}}>
-                IRYS MAINNET CARD
-            </h2>
             <div ref={cardRef} className="bg-zinc-900/80 p-4 rounded-2xl backdrop-blur-sm border border-zinc-700">
               <div className="aspect-[4/5] w-full">
                  <Card theme={theme} design={design} data={cardData} titleEffect={titleEffect} descriptionEffect={descriptionEffect} />
@@ -184,6 +199,9 @@ const App: React.FC = () => {
                     />
                   ))}
                 </div>
+                <p className="text-xs text-gray-400 mt-3 text-center">
+                  Themes created by <a href="https://twitter.com/Peter_ajay07" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">Peter_ajay07</a>. Contact him if you face any issues.
+                </p>
               </div>
             </div>
           </div>
@@ -193,6 +211,13 @@ const App: React.FC = () => {
             <h2 className="font-orbitron text-4xl md:text-5xl font-bold tracking-widest text-shadow-glow-footer" style={{ textShadow: `0 0 15px ${themeStyles[theme].colors.glow}`}}>IRYS CARDS</h2>
         </footer>
       </div>
+      {uncroppedImage && (
+        <ImageCropModal 
+          uncroppedImage={uncroppedImage}
+          onApply={handleCropApply}
+          onCancel={handleCropCancel}
+        />
+      )}
     </div>
   );
 };
