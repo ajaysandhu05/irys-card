@@ -5,6 +5,7 @@ import { CardTheme, CardDesign, CardData, TextEffect } from './types';
 import Card, { designPaths, themeStyles } from './components/Card';
 import Controls from './components/Controls';
 import NetworkBackground from './components/NetworkBackground';
+import MovingTextBackground from './components/MovingTextBackground';
 
 const defaultImage = 'https://cdn.pixabay.com/photo/2022/11/07/14/35/memory-7577189_1280.jpg';
 const defaultDescription = 'MY SELF PETER I M SHIHAN AT IRYS COMMUNITY AND I HAVE CREATED THIS CARD FOR KINGS & QUEEN OF THE IRYS';
@@ -77,7 +78,8 @@ const App: React.FC = () => {
   return (
     <div className={`relative min-h-screen w-full bg-black text-white transition-all duration-500`}>
       <NetworkBackground theme={theme} />
-      <div className={`min-h-screen w-full bg-gradient-to-b ${backgroundStyles[theme]} backdrop-blur-sm flex flex-col items-center justify-center p-4`}>
+      <MovingTextBackground theme={theme} />
+      <div className={`relative z-10 min-h-screen w-full bg-gradient-to-b ${backgroundStyles[theme]} backdrop-blur-sm flex flex-col items-center justify-center p-4`}>
         
         <h1 className="text-center font-orbitron text-3xl font-bold mb-8 text-white uppercase tracking-wider whitespace-nowrap" style={{ textShadow: `0 0 10px ${themeStyles[theme].colors.glow}`}}>
             (✧◡✧) IRYS MAINNET CARD (✧◡✧)
