@@ -192,9 +192,13 @@ const Card: React.FC<CardProps> = ({ theme, design, data, titleEffect, descripti
         
         <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 500" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
             <defs>
-                <linearGradient id={`grad-${theme}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style={{stopColor: colors.glow, stopOpacity:1}} />
-                    <stop offset="100%" style={{stopColor: colors.base, stopOpacity:1}} />
+                <linearGradient id={`grad-${theme}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor={colors.glow}>
+                        <animate attributeName="stop-color" values={`${colors.glow};${colors.base};${colors.glow}`} dur="4s" repeatCount="indefinite" />
+                    </stop>
+                    <stop offset="100%" stopColor={colors.base}>
+                        <animate attributeName="stop-color" values={`${colors.base};${colors.glow};${colors.base}`} dur="4s" repeatCount="indefinite" />
+                    </stop>
                 </linearGradient>
                 <filter id={`glow-${theme}`} x="-50%" y="-50%" width="200%" height="200%">
                     <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
@@ -225,9 +229,33 @@ const Card: React.FC<CardProps> = ({ theme, design, data, titleEffect, descripti
                 </span>
             </div>
 
-            <div className={`flex-grow my-3 border-2 p-1 bg-black/30 rounded-lg min-h-0 flex items-center justify-center overflow-hidden`} style={{borderColor: colors.base}}>
+            <div className={`flex-grow my-3 border-2 p-1 bg-black/30 rounded-lg min-h-0 flex items-center justify-center overflow-hidden relative`} style={{borderColor: colors.base}}>
                  {data.image ? (
-                    <img src={data.image} alt="Card art" className="w-full h-full object-cover rounded-md transition-transform duration-500 ease-in-out" />
+                    <>
+                        <img src={data.image} alt="Card art" className="w-full h-full object-cover rounded-md" />
+                         <div 
+                            className="absolute inset-0 w-full h-full rounded-md pointer-events-none"
+                            style={{
+                                background: `
+                                    repeating-linear-gradient(
+                                        45deg,
+                                        transparent,
+                                        rgba(255, 255, 255, 0.05) 2px,
+                                        rgba(255, 255, 255, 0.05) 4px,
+                                        transparent 6px
+                                    ),
+                                    radial-gradient(
+                                        circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                                        rgba(255, 255, 255, 0.25),
+                                        transparent 35%
+                                    )
+                                `,
+                                opacity: 'var(--shine-opacity, 0)',
+                                transition: 'opacity 0.2s ease-out',
+                                mixBlendMode: 'plus-lighter',
+                            }}
+                        />
+                    </>
                 ) : (
                     <div className="w-full h-full bg-gray-800 rounded-md flex items-center justify-center">
                         <span className="text-gray-500">No Image</span>
