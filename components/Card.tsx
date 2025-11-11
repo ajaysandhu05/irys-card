@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useRef, useCallback } from 'react';
 import { CardTheme, CardDesign, CardData, TextEffect } from '../types';
 
 interface CardProps {
@@ -124,17 +125,71 @@ const Card: React.FC<CardProps> = ({ theme, design, data, titleEffect, descripti
   const style = themeStyles[theme];
   const framePath = designPaths[design];
   const { colors } = style;
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const el = cardRef.current;
+    if (!el) return;
+
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const width = el.offsetWidth;
+    const height = el.offsetHeight;
+
+    const rotateX = ((y / height) - 0.5) * -25;
+    const rotateY = ((x / width) - 0.5) * 25;
+    const mouseX = (x / width) * 100;
+    const mouseY = (y / height) * 100;
+
+    el.style.setProperty('--rotate-x', `${rotateX}deg`);
+    el.style.setProperty('--rotate-y', `${rotateY}deg`);
+    el.style.setProperty('--mouse-x', `${mouseX}%`);
+    el.style.setProperty('--mouse-y', `${mouseY}%`);
+    el.style.setProperty('--shine-opacity', '1');
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    el.style.setProperty('--rotate-x', '0deg');
+    el.style.setProperty('--rotate-y', '0deg');
+    el.style.setProperty('--shine-opacity', '0');
+  }, []);
 
   return (
-    <div className="w-full h-full p-3 relative font-sans" style={{
-        '--color-base': colors.base,
-        '--color-glow': colors.glow,
-      } as React.CSSProperties}>
+    <div
+      className="w-full h-full relative font-sans"
+      style={{ perspective: '1000px' }}
+    >
+      <div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className="w-full h-full p-3 relative"
+        style={{
+          '--color-base': colors.base,
+          '--color-glow': colors.glow,
+          transform: 'rotateX(var(--rotate-x, 0)) rotateY(var(--rotate-y, 0))',
+          transition: 'transform 0.2s cubic-bezier(0.23, 1, 0.32, 1)',
+          transformStyle: 'preserve-3d',
+        } as React.CSSProperties}
+      >
+        <div
+          className="absolute inset-3 rounded-[24px] z-20"
+          style={{
+            background: `radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.35), transparent 35%)`,
+            opacity: 'var(--shine-opacity, 0)',
+            transition: 'opacity 0.2s ease-out',
+            mixBlendMode: 'color-dodge',
+            pointerEvents: 'none',
+          }}
+        />
+
         <div className={`absolute inset-0 bg-black/30 blur-3xl rounded-[30px] ${colors.shadow}`} style={{
             boxShadow: `0 0 60px 20px ${colors.glow}`
         }}></div>
         
-        {/* Frame SVG */}
         <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 500" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
             <defs>
                 <linearGradient id={`grad-${theme}`} x1="0%" y1="0%" x2="0%" y2="100%">
@@ -150,13 +205,11 @@ const Card: React.FC<CardProps> = ({ theme, design, data, titleEffect, descripti
                 </filter>
             </defs>
             <path d={framePath} stroke={`url(#grad-${theme})`} strokeWidth="4" filter={`url(#glow-${theme})`} vectorEffect="non-scaling-stroke" />
-            {/* Inner details */}
             <path d="M15,40 H285 M15,460 H285" stroke={colors.base} strokeWidth="1" strokeOpacity="0.5" vectorEffect="non-scaling-stroke"/>
             <path d="M40,15 V485 M260,15 V485" stroke={colors.base} strokeWidth="1" strokeOpacity="0.5" vectorEffect="non-scaling-stroke"/>
         </svg>
 
         <div className="relative w-full h-full flex flex-col justify-between p-4 z-10 bg-black/10 rounded-[20px]">
-            {/* Top section */}
             <div className={`border-2 rounded-lg p-2 flex items-center justify-between bg-gray-900/50 backdrop-blur-sm`} style={{borderColor: colors.base}}>
                  <span className="text-lg font-bold" style={{ color: colors.glow, textShadow: `0 0 5px ${colors.glow}` }}>
                     (✧◡✧)
@@ -172,7 +225,6 @@ const Card: React.FC<CardProps> = ({ theme, design, data, titleEffect, descripti
                 </span>
             </div>
 
-            {/* Image section */}
             <div className={`flex-grow my-3 border-2 p-1 bg-black/30 rounded-lg min-h-0 flex items-center justify-center overflow-hidden`} style={{borderColor: colors.base}}>
                  {data.image ? (
                     <img src={data.image} alt="Card art" className="w-full h-full object-cover rounded-md transition-transform duration-500 ease-in-out" />
@@ -183,11 +235,9 @@ const Card: React.FC<CardProps> = ({ theme, design, data, titleEffect, descripti
                 )}
             </div>
 
-            {/* Bottom section */}
             <div className={`p-3 rounded-lg bg-gray-900/30 backdrop-blur-sm border-t-2`} style={{borderTopColor: colors.base}}>
                 <div className="flex items-start gap-3">
                     <div className="h-16 w-16 flex-shrink-0 rounded-full flex items-center justify-center bg-black/30 relative overflow-hidden" style={{border: `2px solid ${colors.base}`}}>
-                         {/* Enhanced IRYS Logo */}
                         <svg viewBox="0 0 100 100" className="absolute w-full h-full text-white opacity-20" xmlns="http://www.w3.org/2000/svg">
                             <defs>
                                 <linearGradient id={`grad-${theme}-logo-bg`} x1="0%" y1="0%" x2="100%" y2="100%">
@@ -235,9 +285,9 @@ const Card: React.FC<CardProps> = ({ theme, design, data, titleEffect, descripti
                 </div>
             </div>
         </div>
+      </div>
     </div>
   );
 };
 
-// FIX: The original file was truncated, which resulted in invalid JSX and a missing default export. The component has been completed and the default export has been added.
 export default Card;

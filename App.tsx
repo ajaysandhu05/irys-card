@@ -5,7 +5,6 @@ import { CardTheme, CardDesign, CardData, TextEffect } from './types';
 import Card, { designPaths, themeStyles } from './components/Card';
 import Controls from './components/Controls';
 import NetworkBackground from './components/NetworkBackground';
-import ImageCropModal from './components/ImageCropModal';
 
 const defaultImage = 'https://cdn.pixabay.com/photo/2022/11/07/14/35/memory-7577189_1280.jpg';
 const defaultDescription = 'MY SELF PETER I M SHIHAN AT IRYS COMMUNITY AND I HAVE CREATED THIS CARD FOR KINGS & QUEEN OF THE IRYS';
@@ -20,7 +19,6 @@ const App: React.FC = () => {
     description: defaultDescription,
     image: defaultImage,
   });
-  const [uncroppedImage, setUncroppedImage] = useState<string | null>(null);
 
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -54,16 +52,7 @@ const App: React.FC = () => {
   }
 
   const handleImageUpload = (image: string) => {
-    setUncroppedImage(image);
-  };
-
-  const handleCropApply = (croppedImage: string) => {
-    setCardData(prev => ({ ...prev, image: croppedImage }));
-    setUncroppedImage(null);
-  };
-
-  const handleCropCancel = () => {
-    setUncroppedImage(null);
+    setCardData(prev => ({ ...prev, image }));
   };
 
   const backgroundStyles: Record<CardTheme, string> = {
@@ -200,7 +189,7 @@ const App: React.FC = () => {
                   ))}
                 </div>
                 <p className="text-xs text-gray-400 mt-3 text-center">
-                  Themes created by <a href="https://twitter.com/Peter_ajay07" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">Peter_ajay07</a>. Contact him if you face any issues.
+                  Created by <a href="https://twitter.com/Peter_ajay07" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">Peter_ajay07</a>. Contact him if you face any issues.
                 </p>
               </div>
             </div>
@@ -211,13 +200,6 @@ const App: React.FC = () => {
             <h2 className="font-orbitron text-4xl md:text-5xl font-bold tracking-widest text-shadow-glow-footer" style={{ textShadow: `0 0 15px ${themeStyles[theme].colors.glow}`}}>IRYS CARDS</h2>
         </footer>
       </div>
-      {uncroppedImage && (
-        <ImageCropModal 
-          uncroppedImage={uncroppedImage}
-          onApply={handleCropApply}
-          onCancel={handleCropCancel}
-        />
-      )}
     </div>
   );
 };
