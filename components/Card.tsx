@@ -1,4 +1,6 @@
 
+
+
 import React, { useRef, useCallback } from 'react';
 import { CardTheme, CardDesign, CardData, TextEffect } from '../types';
 
@@ -230,7 +232,7 @@ const Card: React.FC<CardProps> = ({ theme, design, data, titleEffect, descripti
             </div>
 
             <div className={`flex-grow my-3 border-2 p-1 bg-black/30 rounded-lg min-h-0 flex items-center justify-center overflow-hidden relative`} style={{borderColor: colors.base}}>
-                 {data.image ? (
+                {data.image ? (
                     <>
                         <img src={data.image} alt="Card art" className="w-full h-full object-cover rounded-md" />
                          <div 

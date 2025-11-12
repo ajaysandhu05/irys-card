@@ -1,4 +1,7 @@
 
+
+
+
 import React, { useState, useRef, useCallback } from 'react';
 import { toPng } from 'html-to-image';
 import { CardTheme, CardDesign, CardData, TextEffect } from './types';
@@ -6,20 +9,32 @@ import Card, { designPaths, themeStyles } from './components/Card';
 import Controls from './components/Controls';
 import NetworkBackground from './components/NetworkBackground';
 import MovingTextBackground from './components/MovingTextBackground';
+import ThankYouModal from './components/ThankYouModal';
 
+
+// Main App Component
 const defaultImage = 'https://cdn.pixabay.com/photo/2022/11/07/14/35/memory-7577189_1280.jpg';
 const defaultDescription = 'MY SELF PETER I M SHIHAN AT IRYS COMMUNITY AND I HAVE CREATED THIS CARD FOR KINGS & QUEEN OF THE IRYS';
 
-const App: React.FC = () => {
-  const [theme, setTheme] = useState<CardTheme>(CardTheme.Red);
-  const [design, setDesign] = useState<CardDesign>(CardDesign.Standard);
-  const [titleEffect, setTitleEffect] = useState<TextEffect>(TextEffect.Glow);
-  const [descriptionEffect, setDescriptionEffect] = useState<TextEffect>(TextEffect.Glow);
-  const [cardData, setCardData] = useState<CardData>({
+const defaultState = {
+  theme: CardTheme.Oceanic,
+  design: CardDesign.Standard,
+  titleEffect: TextEffect.Glow,
+  descriptionEffect: TextEffect.Glow,
+  cardData: {
     title: 'IRYS MAINNET CARD',
     description: defaultDescription,
     image: defaultImage,
-  });
+  },
+};
+
+const App: React.FC = () => {
+  const [theme, setTheme] = useState<CardTheme>(defaultState.theme);
+  const [design, setDesign] = useState<CardDesign>(defaultState.design);
+  const [titleEffect, setTitleEffect] = useState<TextEffect>(defaultState.titleEffect);
+  const [descriptionEffect, setDescriptionEffect] = useState<TextEffect>(defaultState.descriptionEffect);
+  const [cardData, setCardData] = useState<CardData>(defaultState.cardData);
+  const [showThankYouModal, setShowThankYouModal] = useState(false);
 
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -34,6 +49,7 @@ const App: React.FC = () => {
         link.download = 'irys-card.png';
         link.href = dataUrl;
         link.click();
+        setShowThankYouModal(true);
       })
       .catch((err) => {
         console.error('oops, something went wrong!', err);
@@ -41,15 +57,11 @@ const App: React.FC = () => {
   }, [cardRef]);
 
   const handleReset = () => {
-    setCardData({
-      title: 'IRYS MAINNET CARD',
-      description: defaultDescription,
-      image: defaultImage,
-    });
-    setTheme(CardTheme.Red);
-    setDesign(CardDesign.Standard);
-    setTitleEffect(TextEffect.Glow);
-    setDescriptionEffect(TextEffect.Glow);
+    setCardData(defaultState.cardData);
+    setTheme(defaultState.theme);
+    setDesign(defaultState.design);
+    setTitleEffect(defaultState.titleEffect);
+    setDescriptionEffect(defaultState.descriptionEffect);
   }
 
   const handleImageUpload = (image: string) => {
@@ -74,7 +86,7 @@ const App: React.FC = () => {
     [CardTheme.Forest]: 'from-emerald-900/50 to-lime-900/50',
     [CardTheme.Cosmic]: 'from-black to-indigo-900/60',
   };
-
+  
   return (
     <div className={`relative min-h-screen w-full bg-black text-white transition-all duration-500`}>
       <NetworkBackground theme={theme} />
@@ -93,7 +105,11 @@ const App: React.FC = () => {
               </div>
             </div>
              <div className="flex justify-center items-center gap-4 mt-6">
-                <Controls onReset={handleReset} onDownload={handleDownload} onImageUpload={handleImageUpload} />
+                <Controls 
+                  onReset={handleReset} 
+                  onDownload={handleDownload} 
+                  onImageUpload={handleImageUpload}
+                />
             </div>
           </div>
           
@@ -102,25 +118,29 @@ const App: React.FC = () => {
             <div className="space-y-6">
               <div>
                 <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-2">Title</label>
-                <input
-                  type="text"
-                  id="title"
-                  value={cardData.title}
-                  onChange={(e) => setCardData(prev => ({ ...prev, title: e.target.value }))}
-                  className="w-full bg-gray-900/50 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition"
-                  placeholder="Enter card title"
-                />
+                <div className="relative">
+                    <input
+                      type="text"
+                      id="title"
+                      value={cardData.title}
+                      onChange={(e) => setCardData(prev => ({ ...prev, title: e.target.value }))}
+                      className="w-full bg-gray-900/50 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition"
+                      placeholder="Enter card title"
+                    />
+                </div>
               </div>
               <div>
                 <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-2">Description</label>
-                <textarea
-                  id="description"
-                  rows={3}
-                  value={cardData.description}
-                  onChange={(e) => setCardData(prev => ({ ...prev, description: e.target.value }))}
-                  className="w-full bg-gray-900/50 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition"
-                  placeholder="Enter card description"
-                />
+                <div className="relative">
+                    <textarea
+                      id="description"
+                      rows={3}
+                      value={cardData.description}
+                      onChange={(e) => setCardData(prev => ({ ...prev, description: e.target.value }))}
+                      className="w-full bg-gray-900/50 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition"
+                      placeholder="Enter card description"
+                    />
+                </div>
               </div>
                <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">Title Effect</label>
@@ -178,8 +198,13 @@ const App: React.FC = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Theme</label>
-                <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
+                <div className="flex justify-between items-center mb-2">
+                  <label htmlFor="theme-selector" className="text-sm font-medium text-gray-300">Theme</label>
+                  <span className="text-sm font-semibold" style={{ color: themeStyles[theme].colors.glow }}>
+                    {theme}
+                  </span>
+                </div>
+                <div id="theme-selector" className="grid grid-cols-3 md:grid-cols-4 gap-3">
                   {(Object.keys(CardTheme) as Array<keyof typeof CardTheme>).map((key) => (
                     <button
                       key={key}
@@ -187,10 +212,11 @@ const App: React.FC = () => {
                       className={`h-12 w-full rounded-md border-2 transition-transform transform hover:scale-105 ${theme === CardTheme[key] ? 'border-white scale-105' : 'border-transparent'}`}
                       style={{ backgroundColor: themeStyles[CardTheme[key]].colors.glow }}
                       aria-label={`Select ${key} theme`}
+                      title={key}
                     />
                   ))}
                 </div>
-                <p className="text-xs text-gray-400 mt-3 text-center">
+                <p className="text-sm text-gray-400 mt-3 text-center">
                   Created by <a href="https://twitter.com/Peter_ajay07" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">Peter_ajay07</a>. Contact him if you face any issues.
                 </p>
               </div>
@@ -202,6 +228,7 @@ const App: React.FC = () => {
             <h2 className="font-orbitron text-4xl md:text-5xl font-bold tracking-widest text-shadow-glow-footer" style={{ textShadow: `0 0 15px ${themeStyles[theme].colors.glow}`}}>IRYS CARDS</h2>
         </footer>
       </div>
+      {showThankYouModal && <ThankYouModal theme={theme} onClose={() => setShowThankYouModal(false)} />}
     </div>
   );
 };

@@ -21,7 +21,7 @@ const ControlButton: React.FC<{ onClick?: () => void, children: React.ReactNode,
 const Controls: React.FC<ControlsProps> = ({ onReset, onDownload, onImageUpload }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
             const reader = new FileReader();
@@ -32,6 +32,7 @@ const Controls: React.FC<ControlsProps> = ({ onReset, onDownload, onImageUpload 
             };
             reader.readAsDataURL(file);
         }
+        event.target.value = '';
     };
 
     const triggerFileUpload = () => {
@@ -43,7 +44,7 @@ const Controls: React.FC<ControlsProps> = ({ onReset, onDownload, onImageUpload 
             <input
                 type="file"
                 ref={fileInputRef}
-                onChange={handleImageUpload}
+                onChange={handleFileInputChange}
                 accept="image/*"
                 className="hidden"
             />
