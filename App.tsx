@@ -1,7 +1,4 @@
 
-
-
-
 import React, { useState, useRef, useCallback } from 'react';
 import { toPng } from 'html-to-image';
 import { CardTheme, CardDesign, CardData, TextEffect } from './types';
@@ -216,9 +213,11 @@ const App: React.FC = () => {
                     />
                   ))}
                 </div>
-                <p className="text-sm text-gray-400 mt-3 text-center">
-                  Created by <a href="https://twitter.com/Peter_ajay07" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">Peter_ajay07</a>. Contact him if you face any issues.
-                </p>
+                <div className="text-center mt-6">
+                  <p className="text-sm text-gray-500">
+                      Created by <a href="https://twitter.com/Peter_ajay07" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-300 transition-colors">Peter_ajay07</a>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
