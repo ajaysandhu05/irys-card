@@ -33,6 +33,7 @@ const App: React.FC = () => {
   const [cardData, setCardData] = useState<CardData>(defaultState.cardData);
   const [showThankYouModal, setShowThankYouModal] = useState(false);
 
+
   const cardRef = useRef<HTMLDivElement>(null);
 
   const handleDownload = useCallback(() => {
@@ -62,7 +63,7 @@ const App: React.FC = () => {
   }
 
   const handleImageUpload = (image: string) => {
-    setCardData(prev => ({ ...prev, image }));
+    setCardData(prev => ({ ...prev, image: image }));
   };
 
   const backgroundStyles: Record<CardTheme, string> = {
@@ -113,19 +114,6 @@ const App: React.FC = () => {
           <div className="w-full max-w-md bg-black/30 backdrop-blur-md rounded-2xl p-6 border border-gray-700/50">
             <h2 className="font-orbitron text-2xl font-bold mb-6 text-center">Customize Your Card</h2>
             <div className="space-y-6">
-              <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-2">Title</label>
-                <div className="relative">
-                    <input
-                      type="text"
-                      id="title"
-                      value={cardData.title}
-                      onChange={(e) => setCardData(prev => ({ ...prev, title: e.target.value }))}
-                      className="w-full bg-gray-900/50 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition"
-                      placeholder="Enter card title"
-                    />
-                </div>
-              </div>
               <div>
                 <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-2">Description</label>
                 <div className="relative">
